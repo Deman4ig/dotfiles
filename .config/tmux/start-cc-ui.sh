@@ -1,0 +1,109 @@
+#!/bin/bash
+
+# Default config file location
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+CONFIG_FILE="$SCRIPT_DIR/.config"
+source "$CONFIG_FILE"
+# Window names
+WINDOW_IDE=" ide"
+WINDOW_CLAUDE="󱚞  claude"
+WINDOW_TERMINAL="  terminal"
+
+# Pane names
+PANE_NVIM="nvim"
+PANE_AI="ai"
+PANE_DEV="dev"
+PANE_BTOP="btop"
+PANE_GIT="git"
+
+# Commands
+NAV="cd $PROJECT_DIR"
+CMD_EDITOR="nvim ."
+CMD_CLAUDE="claude"
+CMD_DEV_SERVER="npm run dev"
+CMD_BTOP="btop"
+
+# Check if session already exists
+if tmux has-session -t $SESSION_NAME 2>/dev/null; then
+    echo "Session '$SESSION_NAME' already exists. Attaching..."
+    tmux attach-session -t $SESSION_NAME
+    exit 0
+fi
+
+# Prompt for npm run dev
+echo -n "Start dev server? [y/N]: "
+read -r devServerResponse
+
+if ! command -v $CMD_CLAUDE &>/dev/null; then
+    echo "ai assistant is not installed"
+else
+    echo -n "Start ai assistant? [y/N]: "
+    read -r aiAssistancResponse
+fi
+
+# Process responses
+case "$devServerResponse" in
+    [yY][eE][sS]|[yY])
+        START_DEV=true
+        ;;
+    *)
+        START_DEV=false
+        ;;
+esac
+
+case "$aiAssistancResponse" in
+    [yY][eE][sS]|[yY])
+        START_AI=true
+        ;;
+    *)
+        START_AI=false
+        ;;
+esac
+
+echo "Creating new session '$SESSION_NAME'..."
+
+# Create new session in detached mode
+tmux new-session -d -s $SESSION_NAME -c $PROJECT_DIR
+
+# Setup IDE window
+tmux rename-window -t $SESSION_NAME:0 "$WINDOW_IDE"
+
+# Conditionally create claude window
+if [ "$START_AI" = true ]; then
+    echo "Starting ai assistant..."
+    tmux new-window -t $SESSION_NAME:1 -n "$WINDOW_CLAUDE" -c $PROJECT_DIR
+    tmux select-pane -t $SESSION_NAME:1.0 -T $PANE_AI
+    tmux send-keys -t $SESSION_NAME:1 "$CMD_CLAUDE" Enter
+else
+    echo "Skipping ai assistant window."
+fi
+
+# Create terminal window with complex layout
+tmux new-window -t $SESSION_NAME:2 -n "$WINDOW_TERMINAL" -c $PROJECT_DIR
+
+# Step 1: Split vertically (left/right) - creates pane 0 (left) and pane 1 (right)
+tmux split-window -t $SESSION_NAME:2 -h -c $PROJECT_DIR
+
+# Step 2: Split the LEFT pane horizontally - this creates pane 2, and renumbers!
+tmux split-window -t $SESSION_NAME:2.0 -v -p 70 -c $PROJECT_DIR
+
+# Name the panes
+tmux select-pane -t $SESSION_NAME:0.0 -T $PANE_NVIM
+tmux select-pane -t $SESSION_NAME:2.0 -T $PANE_DEV
+tmux select-pane -t $SESSION_NAME:2.1 -T $PANE_BTOP
+tmux select-pane -t $SESSION_NAME:2.2 -T $PANE_GIT
+
+# Start npm run dev in the left pane (pane 0)
+if [ "$START_DEV" = true ]; then
+    tmux send-keys -t $SESSION_NAME:2.0 "$CMD_DEV_SERVER" Enter
+fi
+
+# Start commands in each window/pane
+tmux send-keys -t $SESSION_NAME:0 "$CMD_EDITOR" Enter
+tmux send-keys -t $SESSION_NAME:2.1 "$CMD_BTOP" Enter
+
+# Switch to the first window
+tmux select-window -t $SESSION_NAME:0
+
+# Attach to the session
+tmux attach-session -t $SESSION_NAME

@@ -1,0 +1,4 @@
+# cc-ui launcher configuration file
+
+SESSION_NAME="everstay"
+PROJECT_DIR="$HOME/projects/everstay/"
