@@ -6,7 +6,7 @@ CONFIG_FILE="$SCRIPT_DIR/.config"
 source "$CONFIG_FILE"
 # Window names
 WINDOW_IDE=" ide"
-WINDOW_CLAUDE="󱚞  claude"
+WINDOW_AI="󱚞  opencode"
 WINDOW_TERMINAL="  terminal"
 
 # Pane names
@@ -19,10 +19,9 @@ PANE_GIT="git"
 # Commands
 NAV="cd $PROJECT_DIR"
 CMD_EDITOR="nvim ."
-CMD_CLAUDE="claude"
+CMD_CLAUDE="opencode"
 CMD_DEV_SERVER="npm run dev"
 CMD_BTOP="btop"
-
 # Check if session already exists
 if tmux has-session -t $SESSION_NAME 2>/dev/null; then
     echo "Session '$SESSION_NAME' already exists. Attaching..."
@@ -68,10 +67,10 @@ tmux new-session -d -s $SESSION_NAME -c $PROJECT_DIR
 # Setup IDE window
 tmux rename-window -t $SESSION_NAME:0 "$WINDOW_IDE"
 
-# Conditionally create claude window
+# Conditionally create ai agent window
 if [ "$START_AI" = true ]; then
     echo "Starting ai assistant..."
-    tmux new-window -t $SESSION_NAME:1 -n "$WINDOW_CLAUDE" -c $PROJECT_DIR
+    tmux new-window -t $SESSION_NAME:1 -n "$WINDOW_AI" -c $PROJECT_DIR
     tmux select-pane -t $SESSION_NAME:1.0 -T $PANE_AI
     tmux send-keys -t $SESSION_NAME:1 "$CMD_CLAUDE" Enter
 else
