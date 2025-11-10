@@ -474,7 +474,12 @@ require('lazy').setup({
         },
       }
 
-      require('lspconfig').jsonls.setup {
+      vim.lsp.config.jsonls = {
+        default_config = {
+          cmd = { 'vscode-json-languageserver', '--stdio' },
+          filetypes = { 'json', 'jsonc' },
+          root_markers = { '.git/' },
+        },
         settings = {
           json = {
             schemas = require('schemastore').json.schemas(),
