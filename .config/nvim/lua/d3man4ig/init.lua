@@ -29,6 +29,10 @@ vim.keymap.set('n', '<leader>hr', '<CMD>Gitsigns reset_hunk<CR>')
 -- lsp keymaps
 vim.keymap.set('n', '<leader>lef', run_eslint, { noremap = true, silent = true })
 vim.keymap.set('n', '<leader>mi', add_missing_imports)
+-- vim.keymap.set('n', '<leader>ll', function()
+--   add_missing_imports()
+--   run_eslint()
+-- end, { noremap = true, silent = true, desc = 'Add imports + ESLint fix' })
 
 vim.keymap.set('n', '<leader>lth', function()
   vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled())

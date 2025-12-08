@@ -8,6 +8,7 @@ source "$CONFIG_FILE"
 WINDOW_IDE=" ide"
 WINDOW_AI="󱚞  opencode"
 WINDOW_TERMINAL="  terminal"
+WINDOW_GIT="  git"
 
 # Pane names
 PANE_NVIM="nvim"
@@ -15,6 +16,7 @@ PANE_AI="ai"
 PANE_DEV="dev"
 PANE_BTOP="btop"
 PANE_GIT="git"
+PANE_LAZYGIT="lazygit"
 
 # Commands
 NAV="cd $PROJECT_DIR"
@@ -49,7 +51,6 @@ case "$devServerResponse" in
         START_DEV=false
         ;;
 esac
-
 case "$aiAssistancResponse" in
     [yY][eE][sS]|[yY])
         START_AI=true
@@ -86,11 +87,15 @@ tmux split-window -t $SESSION_NAME:2 -h -c $PROJECT_DIR
 # Step 2: Split the LEFT pane horizontally - this creates pane 2, and renumbers!
 tmux split-window -t $SESSION_NAME:2.0 -v -p 70 -c $PROJECT_DIR
 
+# Create lazygit window
+tmux new-window -t $SESSION_NAME:3 -n "$WINDOW_GIT" -c $PROJECT_DIR
+
 # Name the panes
 tmux select-pane -t $SESSION_NAME:0.0 -T $PANE_NVIM
 tmux select-pane -t $SESSION_NAME:2.0 -T $PANE_DEV
 tmux select-pane -t $SESSION_NAME:2.1 -T $PANE_BTOP
 tmux select-pane -t $SESSION_NAME:2.2 -T $PANE_GIT
+tmux select-pane -t $SESSION_NAME:3.0 -T $PANE_LAZYGIT
 
 # Start npm run dev in the left pane (pane 0)
 if [ "$START_DEV" = true ]; then
@@ -100,6 +105,7 @@ fi
 # Start commands in each window/pane
 tmux send-keys -t $SESSION_NAME:0 "$CMD_EDITOR" Enter
 tmux send-keys -t $SESSION_NAME:2.1 "$CMD_BTOP" Enter
+tmux send-keys -t $SESSION_NAME:3 "lazygit" Enter
 
 # Switch to the first window
 tmux select-window -t $SESSION_NAME:0
