@@ -11,3 +11,8 @@ decorations_theme_variant = "Dark"
 [font]
 size = 16.0
 normal = {family = "MesloLGS Nerd Font", style = "Regular"}
+
+[[keyboard.bindings]]
+key = "Return"
+mods = "Shift"
+chars = "\u001B\r"

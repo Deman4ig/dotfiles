@@ -59,20 +59,20 @@ for app in "${APPS[@]}"; do
 
                                                                                                                                                 # Check for the font in the user's local font directory
                                                                                                                                                 # if find ~/Library/Fonts -name "*${FONT_NAME}*" | grep -q ".*"; then
-                                                                                                                                                    echo "✅ Font '${FONT_NAME}' is already installed."
-                                                                                                                                                    else
-                                                                                                                                                        echo "❌ Font '${FONT_NAME}' not found."
-                                                                                                                                                            # Ask the user if they want to install it
-                                                                                                                                                                read -p "Do you want to install it now with Homebrew? (y/n) " -n 1 -r
-                                                                                                                                                                    echo # Move to a new line
+                                                                                                                                                echo "✅ Font '${FONT_NAME}' is already installed."
+                                                                                                                                            else
+                                                                                                                                                echo "❌ Font '${FONT_NAME}' not found."
+                                                                                                                                                # Ask the user if they want to install it
+                                                                                                                                                read -p "Do you want to install it now with Homebrew? (y/n) " -n 1 -r
+                                                                                                                                                echo # Move to a new line
 
-                                                                                                                                                                        if [[ $REPLY =~ ^[Yy]$ ]]; then
-                                                                                                                                                                                echo "Installing font..."
-                                                                                                                                                                                        # First, tap the cask-fonts repository
-                                                                                                                                                                                                brew tap homebrew/cask-fonts
-                                                                                                                                                                                                        # Then, install the font
-                                                                                                                                                                                                                eval "$FONT_INSTALL_COMMAND"
-                                                                                                                                                                                                                    else
-                                                                                                                                                                                                                            echo "Skipping installation."
-                                                                                                                                                                                                                                fi
+                                                                                                                                                if [[ $REPLY =~ ^[Yy]$ ]]; then
+                                                                                                                                                    echo "Installing font..."
+                                                                                                                                                    # First, tap the cask-fonts repository
+                                                                                                                                                    brew tap homebrew/cask-fonts
+                                                                                                                                                    # Then, install the font
+                                                                                                                                                    eval "$FONT_INSTALL_COMMAND"
+                                                                                                                                                else
+                                                                                                                                                    echo "Skipping installation."
+                                                                                                                                                fi
                                                                                                                                                                                                                                 fi

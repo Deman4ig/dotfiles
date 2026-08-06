@@ -1,3 +1,4 @@
 .config/tmux/plugins/
 .config/tmux/.config
+.config/tmux/.config-*
 .DS_Store
